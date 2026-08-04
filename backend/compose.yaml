@@ -1,10 +1,11 @@
 services:
-  app:
+  api:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.dev 
     volumes:
       - .:/var/www/html
+      -  /var/www/html/vendor
     ports:
       - "8000:8000"
     depends_on:
