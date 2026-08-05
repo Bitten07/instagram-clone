@@ -16,7 +16,7 @@ class FollowController extends Controller
     {
         try {
             $this->followService->follow($request->user(), $user);
-            return response()->json(['message' => 'Follow successful.'], 200);
+            return response()->json(['message' => 'Follow successful.'], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
@@ -25,9 +25,9 @@ class FollowController extends Controller
     public function unfollow(Request $request, User $user)
     {
         if (!$this->followService->unfollow($request->user(), $user)) {
-            return response()->json(['error' => 'You are not following this user.'], 400);
+            return response()->json(['error' => 'You are not following this user.'], 404);
         }
 
-
+        return response()->json(['message' => 'Unfollow successful.'], 200);
     }
 }

@@ -7,13 +7,19 @@ use App\Models\User;
 class FollowService
 {
 
+    public function isFollowing(User $follower, User $following): bool
+    {
+        return $follower->following()->where('users.id', $following->id)->exists();
+    }
+
+
     function follow(User $follower, User $following): void
     {
         if ($follower->id === $following->id) {
             throw new \Exception("You cannot follow yourself.");
         }
 
-        if ($follower->following()->where('users.id', $following->id)->exists()) {
+        if ($this->isFollowing($follower, $following)) {
             throw new \Exception("You are already following this user.");
         }
 
