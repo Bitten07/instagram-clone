@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Services\FollowService;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Services\FollowService;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class ProfileController extends Controller {
     public function __construct(protected FollowService $followService) {}

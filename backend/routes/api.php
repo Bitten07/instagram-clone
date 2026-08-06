@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\SearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -30,4 +31,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
     Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
+
+    Route::get('/search', [SearchController::class, 'search']);
 });
