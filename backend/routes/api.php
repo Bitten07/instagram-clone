@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\CommentController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -25,4 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/like/{post}', [LikeController::class, 'like']);
     Route::delete('/like/{post}', [LikeController::class, 'unlike']);
+
+    Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
+    Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 });

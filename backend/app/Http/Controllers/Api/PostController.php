@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Post;
 use App\Services\PostService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use \Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 
 
