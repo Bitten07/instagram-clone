@@ -4,13 +4,18 @@ namespace App\Services;
 
 use App\Models\Post;
 use App\Models\User;
-use Illuminate\Pagination\LengthAwarePaginator;
-use \Illuminate\Auth\Access\AuthorizationException;
+use App\Services\LikeService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use \Illuminate\Http\UploadedFile;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Auth\Access\AuthorizationException;
+
+
 
 class PostService
 {
+    public function __construct(protected LikeService $likeService) {}
+
     public function store(User $user, UploadedFile $image, ?string $caption): Post
     {
         $path = Storage::disk('public')->putFile('images', $image);
@@ -24,14 +29,23 @@ class PostService
         return $post;
     }
 
-    public function index(): LengthAwarePaginator
+    public function index(User $user): LengthAwarePaginator
     {
-        return Post::with('user')->paginate(10);
+        $userId = $user->id;
+
+        $response = Post::with('user')->withCount(['likedBy', 'comments'])->withExists(['likedBy as liked_by_me' => function ($query) use ($userId) {
+            $query->where('users.id', $userId);
+        }])->paginate(10);
+
+        return $response;
     }
 
-    public function show(Post $post): Post
+    public function show(Post $post, User $user): Post
     {
-        return $post->load('user');
+        $response = $post->loadCount(['likedBy', 'comments']);
+        $response->liked_by_me = $this->likeService->isLiked($user, $post);
+        return $response;
+
     }
 
     public function delete(Post $post, User $user): void 

@@ -25,15 +25,16 @@ class PostController extends Controller
             return response()->json(['message' => 'Post created successfully', 'post' => $post], 201);        
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $posts = $this->postService->index();
+        $user = $request->user();
+        $posts = $this->postService->index($user);
         return response()->json($posts);
     }
 
-    public function show(Post $post) {
-
-        $post = $this->postService->show($post);
+    public function show(Post $post, Request $request) {
+        $user = $request->user();
+        $post = $this->postService->show($post, $user);
         return response()->json($post);
     }
 
