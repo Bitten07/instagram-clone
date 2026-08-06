@@ -9,8 +9,6 @@ use \Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Storage;
 use \Illuminate\Http\UploadedFile;
 
-
-
 class PostService
 {
     public function store(User $user, UploadedFile $image, ?string $caption): Post

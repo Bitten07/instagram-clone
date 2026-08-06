@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Services\PostService;
 use App\Http\Requests\StorePostRequest;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use \Illuminate\Auth\Access\AuthorizationException;
 
 

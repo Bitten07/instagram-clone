@@ -16,10 +16,7 @@ return new class extends Migration
             $table->unique(['follower_id', 'following_id']);
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         Schema::dropIfExists('follows');

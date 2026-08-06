@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Exceptions\AlreadyFollowingException;
+use App\Exceptions\FollowYourselfException;
 
 class FollowService
 {
@@ -16,11 +18,11 @@ class FollowService
     function follow(User $follower, User $following): void
     {
         if ($follower->id === $following->id) {
-            throw new \Exception("You cannot follow yourself.");
+            throw new FollowYourselfException();
         }
 
         if ($this->isFollowing($follower, $following)) {
-            throw new \Exception("You are already following this user.");
+            throw new AlreadyFollowingException();
         }
 
         $follower->following()->attach($following->id);

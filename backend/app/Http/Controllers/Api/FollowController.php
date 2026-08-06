@@ -14,12 +14,8 @@ class FollowController extends Controller
 
     public function follow(Request $request, User $user)
     {
-        try {
-            $this->followService->follow($request->user(), $user);
-            return response()->json(['message' => 'Follow successful.'], 201);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
-        }
+        $this->followService->follow($request->user(), $user);        
+        return response()->json(["message" => "Follow user successfully."], 201);
     }
     
     public function unfollow(Request $request, User $user)
