@@ -49,7 +49,8 @@
                                     "name",
                                     "username",
                                     "email",
-                                    "password"
+                                    "password",
+                                    "password_confirmation"
                                 ],
                                 "properties": {
                                     "name": {
@@ -67,6 +68,11 @@
                                     "password": {
                                         "type": "string",
                                         "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password123",
+                                        "description": "Must match the password field"
                                     }
                                 }
                             }

@@ -40,7 +40,7 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Senha</label>
+        <label class="form-label">Password</label>
         <div class="position-relative">
           <input 
             :type="hidePassword ? 'password' : 'text'" 
@@ -61,12 +61,12 @@
       <div v-if="error" class="alert alert-danger py-2">{{ error }}</div>
 
       <button type="submit" class="btn btn-primary w-100" :disabled="loading">
-        {{ loading ? 'Entrando...' : 'Entrar' }}
+        {{ loading ? 'loading...' : 'Login' }}
       </button>
     </form>
 
     <p class="text-center mt-3">
-      Não tem conta? <RouterLink to="/register">Cadastre-se</RouterLink>
+      Don't have an account? <RouterLink to="/register"> Sign up.</RouterLink>
     </p>
   </div>
 </template>
