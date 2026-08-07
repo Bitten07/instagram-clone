@@ -1,0 +1,812 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Instagram Clone API",
+        "description": "REST API for the final course project — an Instagram-inspired social media backend built with Laravel, following the MSC (Model-Service-Controller) pattern.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api"
+        }
+    ],
+    "tags": [
+        { "name": "Auth", "description": "Registration, login and logout" },
+        { "name": "Follow", "description": "Follow and unfollow other users" },
+        { "name": "Profile", "description": "View and update user profiles" },
+        {
+            "name": "Posts",
+            "description": "Create, list, view and delete posts"
+        },
+        { "name": "Likes", "description": "Like and unlike posts" },
+        {
+            "name": "Comments",
+            "description": "Create, list and delete comments on posts"
+        },
+        { "name": "Search", "description": "Search users by name or username" }
+    ],
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "Sanctum Token"
+            }
+        }
+    },
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Register a new user",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "username",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Maria Silva"
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "example": "mariasilva"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "maria@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": { "type": "object" },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdef123456"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": { "description": "Validation error" }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Authenticate a user",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["email", "password"],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "maria@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": { "type": "object" },
+                                        "token": { "type": "string" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": { "description": "Invalid credentials" }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Log out (revokes the current token)",
+                "security": [{ "sanctum": [] }],
+                "responses": {
+                    "200": { "description": "Logout successful" },
+                    "401": { "description": "Unauthenticated" }
+                }
+            }
+        },
+        "/follow/{user}": {
+            "post": {
+                "tags": ["Follow"],
+                "summary": "Follow a user",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the user to follow",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User followed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User followed successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "description": "Cannot follow yourself" },
+                    "401": { "description": "Unauthenticated" },
+                    "404": { "description": "User not found" },
+                    "409": { "description": "Already following this user" }
+                }
+            }
+        },
+        "/unfollow/{user}": {
+            "delete": {
+                "tags": ["Follow"],
+                "summary": "Unfollow a user",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the user to unfollow",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Unfollowed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unfollow successful."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" },
+                    "404": { "description": "You are not following this user" }
+                }
+            }
+        },
+        "/profile": {
+            "get": {
+                "tags": ["Profile"],
+                "summary": "View the authenticated user's own profile",
+                "security": [{ "sanctum": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Own profile data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "avatar_path": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Maria Silva"
+                                        },
+                                        "username": {
+                                            "type": "string",
+                                            "example": "mariasilva"
+                                        },
+                                        "bio": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "maria@example.com"
+                                        },
+                                        "followers_count": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "following_count": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "posts_count": {
+                                            "type": "integer",
+                                            "example": 12
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" }
+                }
+            },
+            "patch": {
+                "tags": ["Profile"],
+                "summary": "Update own profile data (name, username, bio)",
+                "security": [{ "sanctum": [] }],
+                "requestBody": {
+                    "required": false,
+                    "description": "Send only the fields you want to update",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Maria S. Silva"
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "example": "maria_photographer"
+                                    },
+                                    "bio": {
+                                        "type": "string",
+                                        "example": "Passionate about photography 📸"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Profile updated successfully" },
+                    "401": { "description": "Unauthenticated" },
+                    "422": {
+                        "description": "Validation error (e.g. username already taken)"
+                    }
+                }
+            }
+        },
+        "/profile/avatar": {
+            "patch": {
+                "tags": ["Profile"],
+                "summary": "Update profile picture",
+                "security": [{ "sanctum": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["avatar"],
+                                "properties": {
+                                    "avatar": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Image file (max 2MB)"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Avatar updated successfully" },
+                    "401": { "description": "Unauthenticated" },
+                    "422": {
+                        "description": "Validation error (invalid or oversized file)"
+                    }
+                }
+            }
+        },
+        "/users/{user}": {
+            "get": {
+                "tags": ["Profile"],
+                "summary": "View another user's profile",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the user",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Other user's profile data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "avatar_path": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "name": { "type": "string" },
+                                        "username": { "type": "string" },
+                                        "bio": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "followers_count": {
+                                            "type": "integer"
+                                        },
+                                        "following_count": {
+                                            "type": "integer"
+                                        },
+                                        "posts_count": { "type": "integer" },
+                                        "is_following": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" },
+                    "404": { "description": "User not found" }
+                }
+            }
+        },
+        "/posts": {
+            "post": {
+                "tags": ["Posts"],
+                "summary": "Create a new post",
+                "security": [{ "sanctum": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["image"],
+                                "properties": {
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Image file (max 2MB)"
+                                    },
+                                    "caption": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "example": "A beautiful sunset"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Post created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Post created successfully"
+                                        },
+                                        "post": { "type": "object" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" },
+                    "422": { "description": "Validation error" }
+                }
+            },
+            "get": {
+                "tags": ["Posts"],
+                "summary": "List all posts (paginated feed)",
+                "security": [{ "sanctum": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of posts, including author, like/comment counts and whether the authenticated user liked each post",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "current_page": { "type": "integer" },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "user_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "image_path": {
+                                                        "type": "string"
+                                                    },
+                                                    "caption": {
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    },
+                                                    "user": {
+                                                        "type": "object"
+                                                    },
+                                                    "likedBy_count": {
+                                                        "type": "integer"
+                                                    },
+                                                    "comments_count": {
+                                                        "type": "integer"
+                                                    },
+                                                    "liked_by_me": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "total": { "type": "integer" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" }
+                }
+            }
+        },
+        "/posts/{post}": {
+            "get": {
+                "tags": ["Posts"],
+                "summary": "View a single post",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the post",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post details, including author, like/comment counts and whether the authenticated user liked it",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": { "type": "integer" },
+                                        "user_id": { "type": "integer" },
+                                        "image_path": { "type": "string" },
+                                        "caption": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "user": { "type": "object" },
+                                        "likedBy_count": { "type": "integer" },
+                                        "comments_count": { "type": "integer" },
+                                        "liked_by_me": { "type": "boolean" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" },
+                    "404": { "description": "Post not found" }
+                }
+            },
+            "delete": {
+                "tags": ["Posts"],
+                "summary": "Delete a post (author only)",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the post",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "204": { "description": "Post deleted successfully" },
+                    "401": { "description": "Unauthenticated" },
+                    "403": {
+                        "description": "You are not authorized to delete this post"
+                    },
+                    "404": { "description": "Post not found" }
+                }
+            }
+        },
+        "/like/{post}": {
+            "post": {
+                "tags": ["Likes"],
+                "summary": "Like a post",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the post to like",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Post liked successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Post liked successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" },
+                    "404": { "description": "Post not found" },
+                    "409": { "description": "You have already liked this post" }
+                }
+            },
+            "delete": {
+                "tags": ["Likes"],
+                "summary": "Unlike a post",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the post to unlike",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post unliked successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unliked successful."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" },
+                    "404": { "description": "You have not liked this post yet" }
+                }
+            }
+        },
+        "/posts/{post}/comments": {
+            "post": {
+                "tags": ["Comments"],
+                "summary": "Add a comment to a post",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the post being commented on",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["body"],
+                                "properties": {
+                                    "body": {
+                                        "type": "string",
+                                        "example": "Great photo!"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Comment created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment created successfully."
+                                        },
+                                        "comment": { "type": "object" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" },
+                    "404": { "description": "Post not found" },
+                    "422": { "description": "Validation error" }
+                }
+            },
+            "get": {
+                "tags": ["Comments"],
+                "summary": "List all comments on a post",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the post",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of comments, including each author's data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": { "type": "integer" },
+                                            "user_id": { "type": "integer" },
+                                            "post_id": { "type": "integer" },
+                                            "body": { "type": "string" },
+                                            "user": { "type": "object" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" },
+                    "404": { "description": "Post not found" }
+                }
+            }
+        },
+        "/comments/{comment}": {
+            "delete": {
+                "tags": ["Comments"],
+                "summary": "Delete a comment (author only)",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "comment",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the comment",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "204": { "description": "Comment deleted successfully" },
+                    "401": { "description": "Unauthenticated" },
+                    "403": {
+                        "description": "You are not authorized to delete this comment"
+                    },
+                    "404": { "description": "Comment not found" }
+                }
+            }
+        },
+        "/search": {
+            "get": {
+                "tags": ["Search"],
+                "summary": "Search users by name or username",
+                "security": [{ "sanctum": [] }],
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "required": false,
+                        "description": "Search term. If omitted, returns all users paginated.",
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of matching users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "current_page": { "type": "integer" },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "username": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "total": { "type": "integer" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthenticated" }
+                }
+            }
+        }
+    }
+}
