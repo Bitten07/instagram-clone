@@ -488,7 +488,7 @@
                                                     "user": {
                                                         "type": "object"
                                                     },
-                                                    "likedBy_count": {
+                                                    "liked_by_count": {
                                                         "type": "integer"
                                                     },
                                                     "comments_count": {
@@ -540,7 +540,7 @@
                                             "nullable": true
                                         },
                                         "user": { "type": "object" },
-                                        "likedBy_count": { "type": "integer" },
+                                        "liked_by_count": { "type": "integer" },
                                         "comments_count": { "type": "integer" },
                                         "liked_by_me": { "type": "boolean" }
                                     }
